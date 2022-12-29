@@ -19,7 +19,12 @@ set(GUI_FILES
     ${SRC_DIR}/gui/glfw.c   ${SRC_DIR}/gui/glfw.h
     ${SRC_DIR}/gui/gui.c    ${SRC_DIR}/gui/gui.h
 )
-add_executable(${PROJECT_NAME} src/main.c ${GUI_FILES})
+
+set(UTILS_FILES
+    ${SRC_DIR}/utils/queue.c   ${SRC_DIR}/utils/queue.h
+)
+
+add_executable(${PROJECT_NAME} src/main.c ${GUI_FILES} ${UTILS_FILES})
 
 find_package( OpenGL REQUIRED )
 

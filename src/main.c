@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <signal.h>  
+#include <signal.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #define WINDOW_SIZE 512
@@ -25,6 +26,7 @@ int glfwStart(int window_size, static char * window_title, GLFWwindow ** out_win
    (*out_window) = window;
 
    glfwMakeContextCurrent(window);
+   gladLoadGL(glfwGetProcAddress);
    glfwSwapInterval(1);
     
    return 0;
@@ -54,7 +56,7 @@ int main() {
       if(!run)
          glfwSetWindowShouldClose(window, GLFW_TRUE);
 
-      //glClear(GL_COLOR_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT);
       glfwSwapBuffers(window);
       glfwPollEvents();
    }

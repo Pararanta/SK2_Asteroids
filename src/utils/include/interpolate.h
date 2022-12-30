@@ -36,6 +36,6 @@
     void SOSInit(SecondOrderSystem * system, float position, float velocity);
     void SOSSetParameters(SecondOrderSystem * system, float frequency, float damping, float response);
     void SOSSolve(SecondOrderSystem * system, float time_step);
-    void InterpolationInit(Interpolation * interpolation, SecondOrderSystem * system, float * in_position, float * in_velocity, float * out_position);
+    void InterpolationInit(Interpolation * interpolation, SecondOrderSystem * system, int * enabled, float * in_position, float * in_velocity, float * out_position);
     void InterpolationUpdate(Interpolation * interpolation, float time_step);
 #endif

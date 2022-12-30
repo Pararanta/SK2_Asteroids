@@ -1,6 +1,6 @@
-[submodule "vendor/glfw"]
-	path = vendor/glfw
+[submodule "ext/glfw"]
+	path = ext/glfw
 	url = https://github.com/glfw/glfw
-[submodule "vendor/glad"]
-	path = vendor/glad
+[submodule "ext/glad"]
+	path = ext/glad
 	url = https://github.com/Dav1dde/glad

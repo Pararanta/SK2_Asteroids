@@ -10,6 +10,8 @@
         uint32_t used_indexes;
     } Poll;
 
+    int pollInit(Poll * poll, uint32_t * indexes, uint32_t count);
     int pollRequest(Poll * poll, uint32_t * index);
     int pollReturn(Poll * poll, uint32_t index);
+
 #endif

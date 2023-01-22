@@ -26,12 +26,15 @@ add_subdirectory( "${GLAD_SOURCES_DIR}/cmake" glad_cmake )
 
 glad_add_library(glad_gl_core STATIC API gl:core=3.3)
 
+add_subdirectory( tinycthread )
+
 add_library(ext INTERFACE)
 
 target_link_libraries(ext
     INTERFACE
         glfw
         glad_gl_core
+        tinycthread
 )
 
 target_include_directories(ext

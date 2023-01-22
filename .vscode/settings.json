@@ -1,7 +1,10 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "glfw3.h": "c"
+        "glfw3.h": "c",
+        "cstddef": "c",
+        "ios": "c",
+        "xiosbase": "c"
     },
     "cmake.configureOnOpen": false
 }

@@ -3,20 +3,7 @@
     
     #include <tinycthread.h>
     #include <stdint.h>
-
-    #ifndef ASTEROIDS_MAX_ROOM_NAME
-        #define ASTEROIDS_MAX_ROOM_NAME 255
-    #endif
-
-    // defines amount of entities queued, cannot go over uint16_t limit
-    #ifndef ASTEROIDS_MAX_ENTITIES_QUEUED
-        #define ASTEROIDS_MAX_ENTITIES_QUEUED 255
-    #endif
-
-    // defines amount of responses queued, cannot go over uint16_t limit
-    #ifndef ASTEROIDS_MAX_RESPONSES_QUEUED
-        #define ASTEROIDS_MAX_RESPONSES_QUEUED 255
-    #endif
+    #include <player_consts.h>
 
     /*
         commands player can execute are:

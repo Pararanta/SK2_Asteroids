@@ -1,0 +1,4 @@
+#ifndef H_ASTEROIDS_PLAYER_UTILS
+#define H_ASTEROIDS_PLAYER_UTILS
+
+#endif

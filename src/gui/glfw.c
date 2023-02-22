@@ -6,6 +6,7 @@
 int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window);
 int glfwFinish(GLFWwindow * window);
 int error(int occured, const char * error);
+void GLFW_error(int occured, const char* error);
 
 int glfwRun(int (*runtime_code)())
 {
@@ -34,7 +35,7 @@ int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window)
    if (error(!glfwInit(), "GLFW init failed!"))
       return 1;
 
-   glfwSetErrorCallback(error);
+   glfwSetErrorCallback(GLFW_error);
 
    GLFWwindow * window = glfwCreateWindow(window_size, window_size, window_title, NULL, NULL);
    if (error(!window, "Window creation error"))
@@ -61,4 +62,10 @@ int error(int occured, const char * error)
    if(occured)
       fprintf(stderr, "Application error occured (%d): %s\n", occured, error);
    return occured;
+}
+
+void GLFW_error(int occured, const char* error)
+{
+    if (occured)
+        fprintf(stderr, "GLFW error occured (%d): %s\n", occured, error);
 }

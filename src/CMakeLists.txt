@@ -8,10 +8,14 @@ target_link_libraries(${PROJECT_NAME}_server
     PUBLIC
         gui
         utils
+        ws2_32
 )
+target_include_directories(${PROJECT_NAME}_server PUBLIC include)
 
 target_link_libraries(${PROJECT_NAME}_client
     PUBLIC
         gui
         utils
+        ws2_32
 )
+target_include_directories(${PROJECT_NAME}_client PUBLIC include)

@@ -3,10 +3,13 @@
 #include <client.h>
 #include <socket.h>
 #include <sleep.h>
+#include <player.h>
 
 char * host = DEFAULT_HOST;
 char * port = DEFAULT_PORT;
 struct addrinfo * resolved;
+SOCKET fd;
+Player me;
 
 int initAddr()
 {
@@ -66,10 +69,33 @@ int main(int argc, char ** argv)
 
    for(struct addrinfo * it = resolved; it; it=it->ai_next){
         struct sockaddr_in* addr = (struct sockaddr_in*) it->ai_addr; // <- rzutowanie bezpieczne,
-        printf(" %s\n", inet_ntoa(addr->sin_addr));      //    bo w podpowiedziach 
-   } 
-    
+        printf("Resolved: %s\n", inet_ntoa(addr->sin_addr));      //    bo w podpowiedziach 
+   }
+   fd = socket(AF_INET, SOCK_STREAM, 0);
+   int result = connect(fd, resolved->ai_addr, resolved->ai_addrlen);
+   initPlayer(&me, fd, RESPONSE, REQUEST);
+   uint16_t one = 1;
+   struct timespec interval;
+   interval.tv_sec = 0;
+   interval.tv_nsec = 100000;
+   for(int i = 0; i <= 5; i++)
+   {
+       for (int j = 0; j <= 10; j++)
+       {
+           Request req;
+           req.type = REQUEST_ENTITY;
+           req.entity = j;
+           appendRequests(&me, &req, &one);
+           startSending(&me);
+           thrd_sleep(&interval, NULL);
+       }
+      thrd_sleep(&interval, NULL);
+      thrd_sleep(&interval, NULL);
+      thrd_sleep(&interval, NULL);
+   }
    guiRun(0);
+   //sleep(20000);
+   socketClose(fd);
    socketQuit();
    return 0;
 }

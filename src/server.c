@@ -3,12 +3,18 @@
 #include <server.h>
 #include <socket.h>
 #include <errno.h>
+#include <tinycthread.h>
+#include <player.h>
+#include <sleep.h>
 
+thrd_t accept_thrd;
 char * host = DEFAULT_HOST;
 char * port = DEFAULT_PORT;
 int socket_server;
 struct sockaddr_in address_server;
 const int one = 1;
+
+Player player;
 
 int setupAddress()
 {
@@ -22,6 +28,20 @@ int setupAddress()
    address_server.sin_family = AF_INET;
    address_server.sin_addr = address;
    address_server.sin_port = htons( atoi(port) );
+
+   return 0;
+}
+
+int listenForConnections(void * param)
+{
+   while (1) {
+      printf("Waiting for new connection...\n");
+      struct sockaddr_in client_address;
+      size_t size = sizeof(client_address);
+      int connection = accept(socket_server, (struct sockaddr *)&client_address, (socklen_t*)&size);
+      printf("New Player: %s\n", inet_ntoa(client_address.sin_addr));
+      initPlayer(&player, connection, REQUEST, RESPONSE);
+   }
 
    return 0;
 }
@@ -47,13 +67,22 @@ int main(int argc, char ** argv)
    bind(socket_server, (struct sockaddr *) &address_server, sizeof(address_server));
    listen(socket_server, 4);
 
-   while (1) {
-      //printf("Waiting for new connection...\n");
-      struct sockaddr_in client_address;
-      size_t size = sizeof(client_address);
-      int connection = accept(socket_server, (struct sockaddr *)&client_address, (socklen_t*)&size);
-      //printf(" %s\n", inet_ntop(client_address.sin_addr));
+   thrd_create(&accept_thrd, listenForConnections, NULL);
+   
+   Request requests[255];
+   uint16_t count;
+   while(1)
+   {
+       sleep(500);
+       if (!player.status)
+       {
+           continue;
+       }
+      consumeRequests(&player, requests, &count);
+      for(int i = 0; i < count; i++)
+         printf("%d\n", requests[i].entity);
    }
+
    guiRun(0);
    socketQuit();
 

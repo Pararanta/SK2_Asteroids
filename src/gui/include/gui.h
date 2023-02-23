@@ -1,4 +1,6 @@
 #ifndef H_ASTEROIDS_GUI
 #define H_ASTEROIDS_GUI
-    int guiRun(int room_index);
+    #include <room.h>
+
+    int guiRun(void * room_v);
 #endif

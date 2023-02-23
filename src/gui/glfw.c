@@ -10,10 +10,8 @@ void GLFW_error(int occured, const char* error);
 
 int glfwRun(int (*runtime_code)())
 {
-   printf("Hello, World!");
-
    GLFWwindow * window;
-   if(glfwStart(WINDOW_SIZE, "Hello World!", &window))
+   if(glfwStart(WINDOW_SIZE, "ASTEROIDS!", &window))
       return 1;
 
    while(!glfwWindowShouldClose(window))

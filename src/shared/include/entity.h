@@ -3,6 +3,8 @@
 
     #include <inttypes.h>
 
+    #define ENTITY_TYPE_CNT 6
+
     typedef struct {
         uint16_t type;
         float x;
@@ -11,4 +13,5 @@
         float dy;
     } Entity;
 
+    uint8_t checkCollision(Entity * a, Entity * b);
 #endif

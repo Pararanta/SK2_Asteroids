@@ -21,19 +21,19 @@
 
     // client->server
     typedef enum : uint16_t {
-        REQUEST_ENTITY,
-        MOVE,
-        SHOOT
+        REQUEST_ENTITY = 0,
+        MOVE = 1,
+        SHOOT = 2
     } RequestType;
 
     typedef struct {
         RequestType type;
         union {
             uint16_t entity; // used for REQUEST_ENTITY type
-            struct point { // used for MOVE and SHOOT types
+            struct { // used for MOVE and SHOOT types
                 float x;
                 float y;
-            };
+            } vector;
         };
     } Request;
 

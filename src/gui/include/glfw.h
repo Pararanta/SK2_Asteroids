@@ -5,5 +5,5 @@
         #define WINDOW_SIZE 512
     #endif
     
-    int glfwRun(int (*runtime_code)());
+    int glfwRun(int (*initCode)(), int (*runCode)(), int (*finCode)());
 #endif

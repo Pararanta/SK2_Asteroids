@@ -2,7 +2,7 @@
 
 tss_t room_key;
 static Request all_entities_requests[MAX_ENTITY_COUNT];
-static const uint16_t all_entities_count = MAX_ENTITY_COUNT;
+static uint16_t all_entities_count = MAX_ENTITY_COUNT;
 
 void initRooms()
 {
@@ -23,6 +23,8 @@ Room * getThreadRoom()
 int initRoomThread(void * room_v)
 {
     tss_set(room_key, room_v);
+
+    return 0;
 }
 
 int gameStep(float delta)
@@ -89,12 +91,14 @@ int clientBeforeGameStep()
         entity->dx = responses[i].dx;
         entity->dy = responses[i].dy;
     }
+
+    return 0;
 }
 
 int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootState, float tx, float ty)
 {
-    static const uint16_t two = 2;
-    static const uint16_t one = 1;
+    static uint16_t two = 2;
+    static uint16_t one = 1;
 
     Room * room = getThreadRoom();
 
@@ -132,4 +136,6 @@ int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootSta
     }
 
     startSending(&room->player);
+
+    return 0;
 }

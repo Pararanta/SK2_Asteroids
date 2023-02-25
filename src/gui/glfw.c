@@ -8,20 +8,27 @@ int glfwFinish(GLFWwindow * window);
 int error(int occured, const char * error);
 void GLFW_error(int occured, const char* error);
 
-int glfwRun(int (*runtime_code)())
+int glfwRun(int (*initCode)(), int (*runCode)(), int (*finCode)())
 {
    GLFWwindow * window;
    if(glfwStart(WINDOW_SIZE, "ASTEROIDS!", &window))
       return 1;
 
+   if(initCode)
+      initCode();
+
    while(!glfwWindowShouldClose(window))
    {
       glClear(GL_COLOR_BUFFER_BIT);
-      if(runtime_code())
-         glfwSetWindowShouldClose(window, GLFW_TRUE);
+      if(runCode)
+         if(runCode())
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
       glfwSwapBuffers(window);
       glfwPollEvents();
    }
+
+   if(finCode)
+      finCode();
 
    glfwFinish(window);
 
@@ -34,6 +41,15 @@ int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window)
       return 1;
 
    glfwSetErrorCallback(GLFW_error);
+
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+   #ifdef __APPLE__
+      printf("GLFW_OPENGL_FORWARD_COMPAT\n");
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+   #endif
 
    GLFWwindow * window = glfwCreateWindow(window_size, window_size, window_title, NULL, NULL);
    if (error(!window, "Window creation error"))

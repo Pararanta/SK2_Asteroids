@@ -6,6 +6,7 @@
 #include <tinycthread.h>
 #include <player.h>
 #include <sleep.h>
+#include <stdlib.h>
 
 thrd_t accept_thrd;
 char * host = DEFAULT_HOST;
@@ -73,7 +74,7 @@ int main(int argc, char ** argv)
    uint16_t count;
    while(1)
    {
-       sleep(500);
+       sleep_ms(500);
        if (!player.status)
        {
            continue;

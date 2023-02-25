@@ -4,7 +4,7 @@
     #include <unistd.h>
 #endif
 
-void sleep(int ms)
+void sleep_ms(int ms)
 {
     if(ms <= 0)
         return;

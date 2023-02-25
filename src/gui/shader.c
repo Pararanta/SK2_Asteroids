@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <shader.h>
 
-GLuint compileShader(const char * source, GLuint type)
+GLuint compileShader(const char * source, GLenum type)
 {
     GLuint shader = glCreateShader(type);
+    printf("Shader created\n");
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
-
+    printf("Compilation finished\n");
     // Check for vertex shader compile errors
     int success;
     char infoLog[512];
@@ -22,17 +23,17 @@ GLuint compileShader(const char * source, GLuint type)
 
 GLuint createShader(const char * vertex_src, const char * geometry_src, const char * fragment_src)
 {
-    printf("Compiling vertex");
+    printf("Compiling vertex\n");
     GLuint vertex_shader = compileShader(vertex_src, GL_VERTEX_SHADER);
 
     GLuint geometry_shader;
     if(geometry_src)
     {
-        printf("Compiling geometry");
+        printf("Compiling geometry\n");
         geometry_shader = compileShader(geometry_src, GL_GEOMETRY_SHADER);
     }
 
-    printf("Compiling fragment");
+    printf("Compiling fragment\n");
     GLuint fragment_shader = compileShader(fragment_src, GL_FRAGMENT_SHADER);
 
     GLuint program = glCreateProgram();
@@ -44,10 +45,10 @@ GLuint createShader(const char * vertex_src, const char * geometry_src, const ch
 
     int success;
     char infoLog[512];
-    glGetShaderiv(program, GL_LINK_STATUS, &success);
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
     if (!success)
     {
-        glGetShaderInfoLog(program, 512, NULL, infoLog);
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
         printf("Shader linking failed: %s\n", infoLog);
     }
 

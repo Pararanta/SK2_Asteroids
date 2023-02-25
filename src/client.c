@@ -34,7 +34,7 @@ int tryResolve()
       else
       {
          printf("Attempt to resolve %s:%s %d failed, waiting %d ms\n", host, port, i+1, RETRY_WAITTIME);
-         sleep(RETRY_WAITTIME);
+         sleep_ms(RETRY_WAITTIME);
       }
 
    if(!success)

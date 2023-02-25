@@ -166,8 +166,6 @@ int listenRequests(void * player_v)
         request = ntoh_req(request);
         appendRequests(player, &request, &one);
     }
-    int error_code = WSAGetLastError();
-    printf("Failed to connect with error code %d\n", error_code);
     return !player->listen;
 }
 
@@ -206,7 +204,7 @@ int sendRequests(void * player_v)
 
     while(player->listen && !player->connection_error)
     {
-        consumeRequests(player, &requests, &count);
+        consumeRequests(player, requests, &count);
 
         int result = 1;
         for(int i = 0; i < count; i++)
@@ -238,7 +236,7 @@ int sendResponses(void * player_v)
 
     while(player->listen && !player->connection_error)
     {
-        consumeRequests(player, &responses, &count);
+        consumeRequests(player, responses, &count);
 
         int result = 1;
         for(int i = 0; i < count; i++)

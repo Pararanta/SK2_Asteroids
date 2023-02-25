@@ -1,6 +1,15 @@
 #include <gui.h>
 #include <glfw.h>
 #include <loop.h>
+#include <shader_src.h>
+#include <shader.h>
+
+int guiInit()
+{
+    createShader(vertex_circle_src, geometry_circle_src, fragment_circle_src);
+
+    return 0;
+}
 
 int guiRender()
 {
@@ -11,6 +20,6 @@ int guiRender()
 int guiRun(void * room_v)
 {
     Room * room = (Room*)room_v;
-    glfwRun(guiRender);
+    glfwRun(guiInit, NULL, NULL);
     return 0;
 }

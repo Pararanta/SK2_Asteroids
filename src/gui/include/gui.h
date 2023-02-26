@@ -2,5 +2,5 @@
 #define H_ASTEROIDS_GUI
     #include <room.h>
 
-    int guiRun(void * room_v);
+    int guiRun();
 #endif

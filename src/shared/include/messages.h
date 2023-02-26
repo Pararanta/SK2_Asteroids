@@ -3,6 +3,8 @@
 
     #include <inttypes.h>
     #include <socket.h>
+    #include <extensions.h>
+    #include <entity.h>
 
     typedef enum {
         REQUEST,
@@ -11,12 +13,8 @@
 
     // server -> client
     typedef struct {
-        uint16_t entity;
-        uint16_t type;
-        float x;
-        float y;
-        float dx;
-        float dy;
+        uint16_t index;
+        Entity entity;
     } Response;
 
     // client->server
@@ -29,11 +27,8 @@
     typedef struct {
         RequestType type;
         union {
-            uint16_t entity; // used for REQUEST_ENTITY type
-            struct { // used for MOVE and SHOOT types
-                float x;
-                float y;
-            } vector;
+            uint16_t index; // used for REQUEST_ENTITY type
+            Point point;
         };
     } Request;
 
@@ -42,4 +37,5 @@
 
     Response ntoh_res(Response response);
     Response hton_res(Response response);
+
 #endif

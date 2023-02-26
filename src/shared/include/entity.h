@@ -14,4 +14,5 @@
     } Entity;
 
     uint8_t checkCollision(Entity * a, Entity * b);
+    int addToAttribute(Entity * entity, uint16_t * pointer, float * position, float * color);
 #endif

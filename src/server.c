@@ -81,7 +81,7 @@ int main(int argc, char ** argv)
        }
       consumeRequests(&player, requests, &count);
       for(int i = 0; i < count; i++)
-         printf("%d\n", requests[i].entity);
+         printf("%d\n", requests[i].index);
    }
 
    guiRun(0);

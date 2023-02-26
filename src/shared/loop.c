@@ -1,4 +1,5 @@
 #include <loop.h>
+#include <extensions.h>
 
 tss_t room_key;
 static Request all_entities_requests[MAX_ENTITY_COUNT];
@@ -11,7 +12,7 @@ void initRooms()
     for(uint16_t i = 0; i < MAX_ENTITY_COUNT; i++)
     {
         all_entities_requests[i].type = REQUEST_ENTITY;
-        all_entities_requests[i].entity = i;
+        all_entities_requests[i].index = i;
     }
 }
 
@@ -83,14 +84,7 @@ int clientBeforeGameStep()
     consumeResponses(&room->player, responses, &response_cnt);
 
     for(int i = 0; i < response_cnt; i++)
-    {
-        Entity * entity = &room->entities[responses[i].entity];
-        entity->type = responses[i].type;
-        entity->x = responses[i].x;
-        entity->y = responses[i].y;
-        entity->dx = responses[i].dx;
-        entity->dy = responses[i].dy;
-    }
+        room->entities[responses[i].index] = responses[i].entity;
 
     return 0;
 }
@@ -107,9 +101,9 @@ int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootSta
         {
             Request collided[2];
             collided[0].type = REQUEST_ENTITY;
-            collided[0].entity = room->collisions[i].a;
+            collided[0].index = room->collisions[i].a;
             collided[1].type = REQUEST_ENTITY;
-            collided[1].entity = room->collisions[i].b;
+            collided[1].index = room->collisions[i].b;
             appendRequests(&room->player, collided, &two);
         }
     else
@@ -121,8 +115,8 @@ int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootSta
     {
         Request move;
         move.type = MOVE;
-        move.vector.x = dx;
-        move.vector.y = dy;
+        move.point.x = dx;
+        move.point.y = dy;
         appendRequests(&room->player, &move, &one);
     }
 
@@ -130,12 +124,158 @@ int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootSta
     {
         Request shoot;
         shoot.type = SHOOT;
-        shoot.vector.x = tx;
-        shoot.vector.y = ty;
+        shoot.point.x = tx;
+        shoot.point.y = ty;
         appendRequests(&room->player, &shoot, &one);
     }
 
     startSending(&room->player);
 
     return 0;
+}
+
+int serverBeforeGameStep()
+{
+    Room * room = getThreadRoom();
+    uint16_t _one = 1;
+
+    for(int i = 0; i < MAX_PLAYER_COUNT; i++)
+    {
+        if(!room->players[i].status)
+            continue;
+
+        Request requests[MAX_STORED_MESSAGES];
+        uint16_t request_cnt;
+        consumeRequests(&room->players[i], requests, &request_cnt);
+
+        for(uint16_t j = 0; j < request_cnt; j++)
+        {
+            if(requests[j].type == REQUEST_ENTITY)
+            {
+                Response response = {0};
+                response.index = requests[j].index;
+                appendResponses(&room->players[i], &response, &_one);
+            }
+
+            if(requests[j].type == MOVE)
+            {
+                Point normalized = normalize(requests[j].point.x, requests[j].point.y);
+                room->entities[room->players[i].entity].dx = normalized.x;
+                room->entities[room->players[i].entity].dy = normalized.y;
+
+                update(room, room->players[i].entity);
+            }
+
+            if(requests[j].type == SHOOT)
+            {
+                Response response;
+
+                float sx = room->entities[room->players[i].entity].x;
+                float sy = room->entities[room->players[i].entity].y;
+                Point normalized = normalize(requests[j].point.x - sx, requests[j].point.y - sy);
+
+                Entity projectile = {2, sx, sy, normalized.x, normalized.y};
+
+                instantiate(room, projectile);
+            }
+        }
+    }
+}
+
+typedef struct {
+    uint8_t success;
+    uint16_t a;
+    uint16_t b;
+} Matched;
+
+Matched match(Room * room, uint16_t a, uint16_t b, uint16_t type_a, uint16_t type_b)
+{
+    Matched result = {0};
+
+    if(room->entities[a].type == type_a && room->entities[b].type == type_b)
+    {
+        result.success = 1;
+        result.a = a;
+        result.b = b;
+    }
+
+    if(room->entities[b].type == type_a && room->entities[a].type == type_b)
+    {
+        result.success = 1;
+        result.a = b;
+        result.b = a;
+    }
+
+    return result;
+}
+
+void entityLost(Room * room, uint16_t index)
+{
+    for(int i = 0; i < MAX_PLAYER_COUNT; i++)
+        if(room->players[i].entity == index)
+            destroyPlayer(&room->players[i]);
+
+    destroy(room, index);
+}
+
+void entityHit(Room * room, uint16_t bullet, uint16_t asteroid)
+{
+    uint8_t createSmaller = room->entities[asteroid].type < 5;
+
+    if(createSmaller)
+    {
+        Entity smallerAsteroid = {0};
+        smallerAsteroid.type = room->entities[asteroid].type + 1;
+        smallerAsteroid.x = room->entities[asteroid].x;
+        smallerAsteroid.y = room->entities[asteroid].y;
+
+        smallerAsteroid.x = room->entities[asteroid].y;
+        smallerAsteroid.y = room->entities[asteroid].x;
+        instantiate(room, smallerAsteroid);
+
+        smallerAsteroid.x = -smallerAsteroid.x;
+        smallerAsteroid.x = -smallerAsteroid.y;
+        instantiate(room, smallerAsteroid);
+    }
+
+    destroy(room, bullet);
+    destroy(room, asteroid);
+}
+
+int serverAfterGameStep()
+{
+    Room * room = getThreadRoom();
+
+    for(int i = 0; i < room->collision_cnt; i++)
+        {
+            Matched test = {0};
+
+            Matched playerLostT1 = match(room, room->collisions[i].a, room->collisions[i].b, 1, 3);
+            Matched playerLostT2 = match(room, room->collisions[i].a, room->collisions[i].b, 1, 4);
+            Matched playerLostT3 = match(room, room->collisions[i].a, room->collisions[i].b, 1, 5);
+
+            if(playerLostT1.success)
+                entityLost(room, playerLostT1.a);
+
+            if(playerLostT2.success)
+                entityLost(room, playerLostT2.a);
+
+            if(playerLostT3.success)
+                entityLost(room, playerLostT3.a);
+
+            Matched bulletHitT1 = match(room, room->collisions[i].a, room->collisions[i].b, 2, 3);
+            Matched bulletHitT2 = match(room, room->collisions[i].a, room->collisions[i].b, 2, 4);
+            Matched bulletHitT3 = match(room, room->collisions[i].a, room->collisions[i].b, 2, 5);
+
+            if(bulletHitT1.success)
+                entityHit(room, bulletHitT1.a, bulletHitT1.b);
+
+            if(bulletHitT2.success)
+                entityHit(room, bulletHitT2.a, bulletHitT2.b);
+
+            if(bulletHitT3.success)
+                entityHit(room, bulletHitT3.a, bulletHitT3.b);
+        }
+
+    applyDestroy(room);
 }

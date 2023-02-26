@@ -4,13 +4,14 @@
 #include <socket.h>
 #include <sleep.h>
 #include <player.h>
+#include <loop.h>
 
 char * host = DEFAULT_HOST;
 char * port = DEFAULT_PORT;
 struct addrinfo * resolved;
 SOCKET fd;
 Player me;
-
+Room room;
 int initAddr()
 {
    struct addrinfo hints    = {0};
@@ -29,7 +30,7 @@ int tryResolve()
 {
    int success = 0;
    for(int i = 0; i < RETRY_ATTEMPTS; i++)
-      if(success = !initAddr() && resolved)
+      if((success = (!initAddr() && resolved)))
          break;
       else
       {
@@ -47,7 +48,7 @@ int tryResolve()
 
 int messageListen(void * args)
 {
-
+   return 0;
 }
 
 int main(int argc, char ** argv)
@@ -84,7 +85,7 @@ int main(int argc, char ** argv)
        {
            Request req;
            req.type = REQUEST_ENTITY;
-           req.entity = j;
+           req.index = j;
            appendRequests(&me, &req, &one);
            startSending(&me);
            thrd_sleep(&interval, NULL);
@@ -93,7 +94,11 @@ int main(int argc, char ** argv)
       thrd_sleep(&interval, NULL);
       thrd_sleep(&interval, NULL);
    }
-   guiRun(0);
+   Entity ent = {1, 0.5f, 0.5f, 0.5f, 0.5f};
+   room.entities[0] = ent;
+   initRooms();
+   initRoomThread(&room);
+   guiRun();
    //sleep(20000);
    socketClose(fd);
    socketQuit();

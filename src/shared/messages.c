@@ -4,7 +4,7 @@ Request ntoh_req(Request request)
 {
     request.type = ntohs(request.type);
     if(request.type == REQUEST_ENTITY)
-        request.entity = ntohs(request.entity);
+        request.index = ntohs(request.index);
     
     return request;
 }
@@ -13,23 +13,23 @@ Request hton_req(Request request)
 {
     request.type = htons(request.type);
     if(request.type == REQUEST_ENTITY)
-        request.entity = htons(request.entity);
+        request.index = htons(request.index);
     
     return request;
 }
 
 Response ntoh_res(Response response)
 {
-    response.entity = ntohs(response.entity);
-    response.type = ntohs(response.type);
+    response.index = ntohs(response.index);
+    response.entity.type = ntohs(response.entity.type);
     
     return response;
 }
 
 Response hton_res(Response response)
 {
-    response.entity = htons(response.entity);
-    response.type = htons(response.type);
+    response.index = htons(response.index);
+    response.entity.type = htons(response.entity.type);
     
     return response;
 }

@@ -7,6 +7,7 @@
 
     extern tss_t room_key;
     void initRooms();
+    int initRoomThread(void * room_v);
     Room * getThreadRoom();
 
 #endif

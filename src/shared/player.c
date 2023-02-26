@@ -236,7 +236,7 @@ int sendResponses(void * player_v)
 
     while(player->listen && !player->connection_error)
     {
-        consumeRequests(player, responses, &count);
+        consumeResponses(player, responses, &count);
 
         int result = 1;
         for(int i = 0; i < count; i++)

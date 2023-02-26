@@ -59,3 +59,29 @@ GLuint createShader(const char * vertex_src, const char * geometry_src, const ch
 
     return program;
 }
+
+int useProgram(GLuint program)
+{
+    glUseProgram(program);
+}
+
+int setAttrib(GLuint program, const char * name, void * data)
+{
+    GLint location = glGetAttribLocation(program, name);
+    //glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    //glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, data);
+    
+}
+
+int useAttrib(GLuint program, const char * name)
+{
+    GLint location = glGetAttribLocation(program, name);
+    glEnableVertexAttribArray(location);
+}
+
+int disableAttrib(GLuint program, const char * name)
+{
+    GLint location = glGetAttribLocation(program, name);
+    glDisableVertexAttribArray(location);
+}

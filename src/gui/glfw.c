@@ -49,6 +49,7 @@ int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window)
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
    #ifdef __APPLE__
       printf("GLFW_OPENGL_FORWARD_COMPAT\n");
@@ -66,7 +67,10 @@ int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window)
 
    glClearColor(0, 0, 0, 1);
    glfwSwapInterval(1);
-   glViewport(0, 0, window_size, window_size);
+
+   int fbWidth, fbHeight;
+   glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+   glViewport(0, 0, fbWidth, fbHeight);
 
    return 0;
 }

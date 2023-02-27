@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
       thrd_sleep(&interval, NULL);
       thrd_sleep(&interval, NULL);
    }
-   Entity ent = {1, 0.2f, 0.5f, 0.5f, 0.5f};
+   Entity ent = {1, 0.2f, 0.5f, 0.1f, 0.1f};
    room.entities[0] = ent;
    initRooms();
    initRoomThread(&room);

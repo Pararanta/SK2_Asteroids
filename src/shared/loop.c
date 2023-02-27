@@ -99,7 +99,6 @@ int clientBeforeGameStep()
     Response responses[MAX_STORED_MESSAGES];
     uint16_t response_cnt;
     consumeResponses(&room->player, responses, &response_cnt);
-    printf("%d\n", response_cnt);
     for(int i = 0; i < response_cnt; i++)
         room->entities[responses[i].index] = responses[i].entity;
 
@@ -228,7 +227,6 @@ int serverBeforeGameStep(double time, double* lastAsteroid)
 
                 float sx = room->entities[room->players[i].entity].x;
                 float sy = room->entities[room->players[i].entity].y;
-                printf("%f %f, %f %f, %f %f\n", sx, sy, requests[j].point.x, requests[j].point.y, requests[j].point.x - sx, requests[j].point.y - sy);
                 Point normalized = normalize(requests[j].point.x - sx, requests[j].point.y - sy);
 
                 Entity projectile = {2, sx, sy, normalized.x*BULLET_SPEED, normalized.y*BULLET_SPEED};

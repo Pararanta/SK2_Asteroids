@@ -1,5 +1,6 @@
 #include <loop.h>
 #include <extensions.h>
+#include <stdlib.h>
 
 tss_t room_key;
 static Request all_entities_requests[MAX_ENTITY_COUNT];
@@ -41,17 +42,33 @@ int gameStep(float delta)
         entity->x += entity->dx*delta;
         entity->y += entity->dy*delta;
 
-        if(entity->x < 0 && entity->dx < 0)
+        if (entity->x < 0 && entity->dx < 0)
+        {
+            if(entity->type == 1)
+                entity->x = 0;
             entity->dx = -entity->dx;
+        }
 
-        if(entity->x > 1 && entity->dx > 0)
+        if (entity->x > 1 && entity->dx > 0)
+        {
+            if (entity->type == 1)
+                entity->x = 1;
             entity->dx = -entity->dx;
+        }
 
-        if(entity->y < 0 && entity->dy < 0)
+        if (entity->y < 0 && entity->dy < 0)
+        {
+            if (entity->type == 1)
+                entity->y = 0;
             entity->dy = -entity->dy;
+        }
 
-        if(entity->y > 1 && entity->dy > 0)
+        if (entity->y > 1 && entity->dy > 0)
+        {
+            if (entity->type == 1)
+                entity->y = 1;
             entity->dy = -entity->dy;
+        }
     }
 
     room->collision_cnt = 0;
@@ -82,7 +99,7 @@ int clientBeforeGameStep()
     Response responses[MAX_STORED_MESSAGES];
     uint16_t response_cnt;
     consumeResponses(&room->player, responses, &response_cnt);
-
+    printf("%d\n", response_cnt);
     for(int i = 0; i < response_cnt; i++)
         room->entities[responses[i].index] = responses[i].entity;
 
@@ -134,10 +151,49 @@ int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootSta
     return 0;
 }
 
-int serverBeforeGameStep()
+float frandom()
 {
-    Room * room = getThreadRoom();
+    return (float)rand() / RAND_MAX;
+}
+
+int serverBeforeGameStep(double time, double* lastAsteroid)
+{
+    Room* room = getThreadRoom();
     uint16_t _one = 1;
+
+    if ((*lastAsteroid) + SHOOT_COOLDOWN * 4 < time)
+    {
+        float axis = frandom();
+        float position = frandom();
+        Point normalized = normalize(frandom() - 0.5f, frandom() - 0.5f);
+
+        Entity asteroid = {3, 0, 0, normalized.x*ASTEROID_SPEED, normalized.y*ASTEROID_SPEED};
+        
+        if(axis < 0.25f)
+        {
+            asteroid.x = position;
+            asteroid.y = -1.0f;
+        }
+        else if(axis < 0.5f)
+        {
+            asteroid.x = position;
+            asteroid.y = 2.0f;
+        }
+        else if(axis < 0.75)
+        {
+            asteroid.y = position;
+            asteroid.x = -1.0f;
+        }
+        else
+        {
+            asteroid.y = position;
+            asteroid.x = 2.0f;
+        }
+
+        instantiate(room, asteroid);
+
+        (*lastAsteroid) = time;
+    }
 
     for(int i = 0; i < MAX_PLAYER_COUNT; i++)
     {
@@ -160,21 +216,22 @@ int serverBeforeGameStep()
             if(requests[j].type == MOVE)
             {
                 Point normalized = normalize(requests[j].point.x, requests[j].point.y);
-                room->entities[room->players[i].entity].dx = normalized.x;
-                room->entities[room->players[i].entity].dy = normalized.y;
+                room->entities[room->players[i].entity].dx = normalized.x*PLAYER_SPEED;
+                room->entities[room->players[i].entity].dy = normalized.y*PLAYER_SPEED;
 
                 update(room, room->players[i].entity);
             }
 
-            if(requests[j].type == SHOOT)
+            if(requests[j].type == SHOOT && room->players[i].last_shot + SHOOT_COOLDOWN < time)
             {
-                Response response;
+                room->players[i].last_shot = time;
 
                 float sx = room->entities[room->players[i].entity].x;
                 float sy = room->entities[room->players[i].entity].y;
+                printf("%f %f, %f %f, %f %f\n", sx, sy, requests[j].point.x, requests[j].point.y, requests[j].point.x - sx, requests[j].point.y - sy);
                 Point normalized = normalize(requests[j].point.x - sx, requests[j].point.y - sy);
 
-                Entity projectile = {2, sx, sy, normalized.x, normalized.y};
+                Entity projectile = {2, sx, sy, normalized.x*BULLET_SPEED, normalized.y*BULLET_SPEED};
 
                 instantiate(room, projectile);
             }
@@ -229,12 +286,12 @@ void entityHit(Room * room, uint16_t bullet, uint16_t asteroid)
         smallerAsteroid.x = room->entities[asteroid].x;
         smallerAsteroid.y = room->entities[asteroid].y;
 
-        smallerAsteroid.x = room->entities[asteroid].y;
-        smallerAsteroid.y = room->entities[asteroid].x;
+        smallerAsteroid.dx = -room->entities[asteroid].dy;
+        smallerAsteroid.dy = room->entities[asteroid].dx;
         instantiate(room, smallerAsteroid);
 
-        smallerAsteroid.x = -smallerAsteroid.x;
-        smallerAsteroid.x = -smallerAsteroid.y;
+        smallerAsteroid.dx = -smallerAsteroid.dx;
+        smallerAsteroid.dy = -smallerAsteroid.dy;
         instantiate(room, smallerAsteroid);
     }
 
@@ -278,4 +335,18 @@ int serverAfterGameStep()
         }
 
     applyDestroy(room);
+
+    for (int i = 0; i < MAX_PLAYER_COUNT; i++)
+    {
+        if (!room->players[i].status)
+            continue;
+
+        Response responses[MAX_STORED_MESSAGES];
+        uint16_t response_cnt;
+        consumeResponses(&room->players[i], responses, &response_cnt);
+        for (int i = 0; i < response_cnt; i++)
+            update(room, responses[i].index);
+
+        startSending(&room->players[i]);
+    }
 }

@@ -1,7 +1,7 @@
 #include <entity.h>
 #include <messages.h>
 
-float ENTITY_RADIUS[ENTITY_TYPE_CNT] = {0.0f, 0.0625f, 0.03125f, 0.125f, 0.0625f, 0.03125f};
+float ENTITY_RADIUS[ENTITY_TYPE_CNT] = {0.0f, 0.03125f, 0.015625f, 0.125f, 0.0625f, 0.03125f};
 float ENTITY_COLOR[ENTITY_TYPE_CNT][3] = {
     {0.0f, 0.0f, 0.0f},
     {0.0f, 1.0f, 1.0f},

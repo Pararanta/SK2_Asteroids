@@ -21,6 +21,18 @@
         #define MAX_COLLISIONS_PER_STEP 15
     #endif
 
+    #ifndef ASTEROID_SPEED
+        #define ASTEROID_SPEED 0.125
+    #endif
+
+    #ifndef PLAYER_SPEED
+        #define PLAYER_SPEED 1
+    #endif
+
+    #ifndef BULLET_SPEED
+        #define BULLET_SPEED 2
+    #endif
+
     #include <inttypes.h>
     #include <entity.h>
     #include <player.h>

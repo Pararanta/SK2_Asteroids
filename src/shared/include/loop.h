@@ -15,6 +15,6 @@
     int clientBeforeGameStep();
     int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootState, float tx, float ty);
 
-    int serverBeforeGameStep();
+    int serverBeforeGameStep(double time, double* lastAsteroid);
     int serverAfterGameStep();
 #endif

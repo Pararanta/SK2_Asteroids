@@ -10,6 +10,7 @@ const char* vertex_circle_src = "\n"
 "void main() {\n"
 "	gColor = color;\n"
 "	gCoords = coord;\n"
+"   gCoords.z *= 2;\n"
 "	gl_Position = vec4(coord.xy*2 - 1, 0.0f, 1.0f);\n"
 "}\n"
 "\n";

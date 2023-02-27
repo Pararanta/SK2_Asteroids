@@ -10,6 +10,10 @@
         #define MAX_STORED_MESSAGES 255
     #endif
 
+    #ifndef SHOOT_COOLDOWN
+        #define SHOOT_COOLDOWN 1
+    #endif
+
     typedef struct {
         uint16_t status; // 0 - uninitialize, 1 - connected
         SOCKET fd;
@@ -34,6 +38,7 @@
         MessageType sending_type;
 
         uint16_t entity;
+        double last_shot;
     } Player;
 
     /**

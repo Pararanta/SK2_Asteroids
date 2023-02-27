@@ -1,21 +1,29 @@
 #include <glfw.h>
-#include <stdio.h>
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
 
 int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window);
 int glfwFinish(GLFWwindow * window);
 int error(int occured, const char * error);
 void GLFW_error(int occured, const char* error);
 
-int glfwRun(int (*initCode)(), int (*runCode)(), int (*finCode)())
+int glfwRun(int (*initCode)(), int (*runCode)(), int (*finCode)(),
+void (*keyCallback)(GLFWwindow*, int, int, int, int),
+void (*mouseCallback)(GLFWwindow*, int, int, int),
+void (*positionCallback)(GLFWwindow*, double, double),
+const char * name)
 {
    GLFWwindow * window;
-   if(glfwStart(WINDOW_SIZE, "ASTEROIDS!", &window))
+   if(glfwStart(WINDOW_SIZE, name, &window))
       return 1;
 
    if(initCode)
       initCode();
+
+   if(keyCallback)
+      glfwSetKeyCallback(window, keyCallback);
+   if(mouseCallback)
+      glfwSetMouseButtonCallback(window, mouseCallback);
+   if(positionCallback)
+      glfwSetCursorPosCallback(window, positionCallback);
 
    GLuint vao;
    glGenVertexArrays(1, &vao);

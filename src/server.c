@@ -7,6 +7,7 @@
 #include <player.h>
 #include <sleep.h>
 #include <stdlib.h>
+#include <loop.h>
 
 thrd_t accept_thrd;
 char * host = DEFAULT_HOST;
@@ -15,7 +16,7 @@ int socket_server;
 struct sockaddr_in address_server;
 const int one = 1;
 
-Player player;
+Room room;
 
 int setupAddress()
 {
@@ -35,13 +36,15 @@ int setupAddress()
 
 int listenForConnections(void * param)
 {
+   Entity new_player = { 1, 0.5f, 0.5f };
    while (1) {
       printf("Waiting for new connection...\n");
       struct sockaddr_in client_address;
       size_t size = sizeof(client_address);
       int connection = accept(socket_server, (struct sockaddr *)&client_address, (socklen_t*)&size);
       printf("New Player: %s\n", inet_ntoa(client_address.sin_addr));
-      initPlayer(&player, connection, REQUEST, RESPONSE);
+      initPlayer(&room.player, connection, REQUEST, RESPONSE);
+      room.player.entity = instantiate(&room, new_player);
    }
 
    return 0;
@@ -67,22 +70,12 @@ int main(int argc, char ** argv)
    setupAddress();
    bind(socket_server, (struct sockaddr *) &address_server, sizeof(address_server));
    listen(socket_server, 4);
+   
+   initRoom(&room, "SIEMA", 5);
+   initRooms();
+   initRoomThread(&room);
 
    thrd_create(&accept_thrd, listenForConnections, NULL);
-   
-   Request requests[255];
-   uint16_t count;
-   while(1)
-   {
-       sleep_ms(500);
-       if (!player.status)
-       {
-           continue;
-       }
-      consumeRequests(&player, requests, &count);
-      for(int i = 0; i < count; i++)
-         printf("%d\n", requests[i].index);
-   }
 
    guiRun(0);
    socketQuit();

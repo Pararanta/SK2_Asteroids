@@ -1,6 +1,7 @@
 #include <room.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 int appendToAllPlayers(Room * room, Response * response)
 {

@@ -5,9 +5,12 @@
 #include <sleep.h>
 #include <player.h>
 #include <loop.h>
+#include <string.h>
 
 char * host = DEFAULT_HOST;
 char * port = DEFAULT_PORT;
+char * room_name = DEFAULT_ROOM;
+
 struct addrinfo * resolved;
 SOCKET fd;
 Player me;
@@ -59,6 +62,12 @@ int main(int argc, char ** argv)
    if(argc > 2)
       host = argv[2];
 
+   if(argc > 3)
+      room_name = argv[3];
+
+   if(strlen(room_name) > MAX_ROOM_NAME)
+      room_name[MAX_ROOM_NAME] = '\0';
+
    printf("Attempting to connect to %s:%s\n", host, port);
    socketInit();
 
@@ -69,11 +78,17 @@ int main(int argc, char ** argv)
    }
 
    for(struct addrinfo * it = resolved; it; it=it->ai_next){
-        struct sockaddr_in* addr = (struct sockaddr_in*) it->ai_addr; // <- rzutowanie bezpieczne,
-        printf("Resolved: %s\n", inet_ntoa(addr->sin_addr));      //    bo w podpowiedziach 
+        struct sockaddr_in* addr = (struct sockaddr_in*) it->ai_addr;
+        printf("Resolved: %s\n", inet_ntoa(addr->sin_addr));
    }
    fd = socket(AF_INET, SOCK_STREAM, 0);
    int result = connect(fd, resolved->ai_addr, resolved->ai_addrlen);
+
+   uint16_t room_name_size = strlen(room_name);
+   printf("%d %s\n", room_name_size, room_name);
+   room_name_size = htons(room_name_size);
+   send(fd, &room_name_size, sizeof(uint16_t), 0);
+   send(fd, room_name, strlen(room_name), 0);
    initRooms();
    initRoomThread(&room);
    initPlayer(&room.player, fd, RESPONSE, REQUEST);

@@ -8,9 +8,10 @@ int appendToAllPlayers(Room * room, Response * response)
     uint16_t _one = 1;
     for(int i = 0; i < MAX_PLAYER_COUNT; i++)
     {
+        printf("test 1321 %d %d\n", room->players[i].status, i);
         if(!room->players[i].status)
             continue;
-
+        printf("test 1322 %d\n", i);
         appendResponses(&room->players[i], response, &_one);
     }
 
@@ -20,7 +21,6 @@ int appendToAllPlayers(Room * room, Response * response)
 uint16_t instantiate(Room * room, Entity prefab)
 {
     uint16_t result = MAX_ENTITY_COUNT;
-
     mtx_lock(&room->edit);
 
     for(uint16_t i = 0; i < MAX_ENTITY_COUNT; i++)
@@ -40,9 +40,9 @@ uint16_t instantiate(Room * room, Entity prefab)
 
     response.index = result;
     response.entity = room->entities[result];
-
+    printf("testt1\n");
     appendToAllPlayers(room, &response);
-
+    printf("testt2\n");
     return result;
 }
 

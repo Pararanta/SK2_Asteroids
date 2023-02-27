@@ -11,4 +11,8 @@
     #ifndef MAX_STORED_MESSAGES
         #define MAX_STORED_MESSAGES 255
     #endif
+
+    #ifndef MAX_ROOMS
+        #define MAX_ROOMS 255
+    #endif
 #endif

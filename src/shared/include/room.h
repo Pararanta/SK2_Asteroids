@@ -41,7 +41,8 @@
     typedef struct {
         uint8_t status;
         mtx_t edit;
-        char name[MAX_ROOM_NAME];
+        thrd_t room_thrd;
+        char name[MAX_ROOM_NAME+1];
         Entity entities[MAX_ENTITY_COUNT];
         uint16_t to_destroy_cnt;
         uint16_t to_destroy[MAX_ENTITY_QUEUED];

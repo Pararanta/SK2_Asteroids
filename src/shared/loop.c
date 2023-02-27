@@ -1,6 +1,7 @@
 #include <loop.h>
 #include <extensions.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 tss_t room_key;
 static Request all_entities_requests[MAX_ENTITY_COUNT];
@@ -157,8 +158,11 @@ float frandom()
 
 int serverBeforeGameStep(double time, double* lastAsteroid)
 {
+        printf("test12\n");
+
     Room* room = getThreadRoom();
     uint16_t _one = 1;
+    printf("test13\n");
 
     if ((*lastAsteroid) + SHOOT_COOLDOWN * 4 < time)
     {
@@ -196,6 +200,9 @@ int serverBeforeGameStep(double time, double* lastAsteroid)
 
     for(int i = 0; i < MAX_PLAYER_COUNT; i++)
     {
+        if(room->players[i].connection_error)
+            destroyPlayer(&room->players[i]);
+
         if(!room->players[i].status)
             continue;
 
@@ -299,7 +306,9 @@ void entityHit(Room * room, uint16_t bullet, uint16_t asteroid)
 
 int serverAfterGameStep()
 {
+    printf("test12\n");
     Room * room = getThreadRoom();
+    printf("test13\n");
 
     for(int i = 0; i < room->collision_cnt; i++)
         {
@@ -331,8 +340,10 @@ int serverAfterGameStep()
             if(bulletHitT3.success)
                 entityHit(room, bulletHitT3.a, bulletHitT3.b);
         }
+    printf("test14\n");
 
     applyDestroy(room);
+    printf("test15\n");
 
     for (int i = 0; i < MAX_PLAYER_COUNT; i++)
     {
@@ -347,4 +358,6 @@ int serverAfterGameStep()
 
         startSending(&room->players[i]);
     }
+        printf("test16\n");
+
 }

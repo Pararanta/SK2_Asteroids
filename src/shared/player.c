@@ -70,6 +70,7 @@ int destroyPlayer(Player * player)
         return 1;
 
     player->listen = 0;
+    player->connection_error = 0;
 
     cnd_broadcast(&player->send_cnd);
     thrd_yield();

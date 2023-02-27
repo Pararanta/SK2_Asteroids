@@ -8,6 +8,10 @@
         #define DEFAULT_PORT "1979"
     #endif
 
+    #ifndef DEFAULT_ROOM
+        #define DEFAULT_ROOM "ROOM"
+    #endif
+
     #ifndef RETRY_WAITTIME
         #define RETRY_WAITTIME 500
     #endif

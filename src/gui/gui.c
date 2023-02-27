@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <loop.h>
 #include <stdlib.h>
+#include <sleep.h>
 
 GLuint program;
 GLuint coord_vbo, color_vbo;
@@ -75,7 +76,7 @@ int guiRender()
 
 double last = 0.0;
 double lastAsteroid = -60.0f;
-uint32_t frame = 0;
+uint32_t frame = -1;
 
 double updateDelta()
 {
@@ -97,14 +98,16 @@ int clientLoop()
     shoot = 0;
     return 0;
 }
-
+double artificial_time = 0.0;
 int serverLoop()
 {
-    serverBeforeGameStep(last, &lastAsteroid);
-    gameStep(updateDelta());
+    serverBeforeGameStep(artificial_time, &lastAsteroid);
+    gameStep(0.02);
     serverAfterGameStep();
-    guiRender();
 
+    //guiRender();
+    artificial_time += 0.02;
+    sleep_ms(20);
     return 0;
 }
 
@@ -115,6 +118,6 @@ int guiRun(uint8_t client)
     if(client)
         glfwRun(guiInit, clientLoop, NULL, keyCallback, mouseCallback, NULL, "ASTEROIDS! CLIENT");
     else
-        glfwRun(guiInit, serverLoop, NULL, NULL, NULL, NULL, "ASTEROIDS! SERVER");
+        while(!serverLoop());
     return 0;
 }

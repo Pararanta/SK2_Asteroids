@@ -14,7 +14,7 @@ const char * name)
    GLFWwindow * window;
    if(glfwStart(WINDOW_SIZE, name, &window))
       return 1;
-
+      
    if(initCode)
       initCode();
 
@@ -37,6 +37,11 @@ const char * name)
             glfwSetWindowShouldClose(window, GLFW_TRUE);
       glfwSwapBuffers(window);
       glfwPollEvents();
+
+      GLenum error;
+      while ((error = glGetError()) != GL_NO_ERROR) {
+         printf("OpenGL error: %d\n", error);
+      }
    }
 
    if(finCode)
@@ -92,7 +97,6 @@ int glfwFinish(GLFWwindow * window)
 
 int error(int occured, const char * error)
 {
-   if(occured)
       fprintf(stderr, "Application error occured (%d): %s\n", occured, error);
    return occured;
 }

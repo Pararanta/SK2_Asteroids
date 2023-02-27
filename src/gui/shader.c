@@ -65,13 +65,13 @@ int useProgram(GLuint program)
     glUseProgram(program);
 }
 
-int setAttrib(GLuint program, const char * name, void * data)
+int setAttrib(GLuint program, const char * name, void * data, uint16_t count, GLuint vbo)
 {
     GLint location = glGetAttribLocation(program, name);
-    //glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    //glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-    glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, data);
-    
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, count*3*sizeof(float), data, GL_STATIC_DRAW);
+    glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(location);
 }
 
 int useAttrib(GLuint program, const char * name)

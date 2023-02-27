@@ -17,6 +17,10 @@ int glfwRun(int (*initCode)(), int (*runCode)(), int (*finCode)())
    if(initCode)
       initCode();
 
+   GLuint vao;
+   glGenVertexArrays(1, &vao);
+   glBindVertexArray(vao);
+
    while(!glfwWindowShouldClose(window))
    {
       glClear(GL_COLOR_BUFFER_BIT);
@@ -59,8 +63,11 @@ int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window)
 
    glfwMakeContextCurrent(window);
    gladLoadGL(glfwGetProcAddress);
+
+   glClearColor(0, 0, 0, 1);
    glfwSwapInterval(1);
    glViewport(0, 0, window_size, window_size);
+
    return 0;
 }
 

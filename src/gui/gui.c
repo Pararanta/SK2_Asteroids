@@ -7,6 +7,7 @@
 #include <room.h>
 #include <stdio.h>
 #include <loop.h>
+#include <stdlib.h>
 
 GLuint program;
 GLuint coord_vbo, color_vbo;

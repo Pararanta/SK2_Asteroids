@@ -25,7 +25,7 @@ int sendRequests(void * player_v);
 */
 int sendResponses(void * player_v);
 
-int initPlayer(Player * player, SOCKET fd, MessageType listen_type, MessageType send_type)
+int initPlayer(Player * player, sock_t fd, MessageType listen_type, MessageType send_type)
 {
     if(player->status)
         return 1;

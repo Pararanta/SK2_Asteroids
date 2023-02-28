@@ -120,7 +120,11 @@ int listenForConnections(void * param)
          }
          printf("New Player Index: %d\n", player_index);
          initPlayer(&rooms[found_room_index].players[player_index], connection, REQUEST, RESPONSE);
-         rooms[found_room_index].players[player_index].entity = instantiate(&rooms[found_room_index], new_player);
+         uint16_t instance_index = instantiate(&rooms[found_room_index], new_player);
+         rooms[found_room_index].players[player_index].entity = instance_index;
+         instance_index = htons(instance_index);
+         send(connection, (char*)&instance_index, sizeof(uint16_t), 0);
+         
          continue;
 
       }

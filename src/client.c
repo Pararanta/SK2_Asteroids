@@ -93,6 +93,8 @@ int main(int argc, char ** argv)
    initRoom(&room, room_name, strlen(room_name));
    initRoomThread(&room);
    initPlayer(&room.player, fd, RESPONSE, REQUEST);
+   recv(fd, &room.player.entity, sizeof(uint16_t), 0);
+   room.player.entity = ntohs(room->player.entity);
    guiRun(1);
    socketClose(fd);
    socketQuit();

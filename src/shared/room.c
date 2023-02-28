@@ -88,6 +88,7 @@ int initRoom(Room * room, const char * name, size_t name_len)
         return 1;
 
     room->status = 1;
+    room->frame = -1;
 
     snprintf(room->name, name_len+1, "%s", name);
     room->name[name_len] = '\0';

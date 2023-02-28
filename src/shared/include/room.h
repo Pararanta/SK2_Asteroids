@@ -60,7 +60,7 @@
         double time;
         double delta;
         double last_asteroid;
-        uint32_t frame;
+        uint16_t frame;
     } Room;
 
     uint16_t instantiate(Room * room, Entity prefab);

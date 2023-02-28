@@ -74,12 +74,6 @@ int guiRender()
     return 0;
 }
 
-double last = 0.0;
-double lastAsteroid = -60.0f;
-double delta = 0.0f;
-
-uint32_t frame = -1;
-
 double checkDelta(Room* room)
 {
     double now = getTime();
@@ -105,7 +99,7 @@ int clientLoop()
 
     clientBeforeGameStep();
     gameStep(room->delta);
-    clientAfterGameStep(!(room->frame %120), right - left, up - down, shoot, x, y);
+    clientAfterGameStep(!(room->frame%120), right - left, up - down, shoot, x, y);
     guiRender();
     shoot = 0;
     return 0;
@@ -114,16 +108,14 @@ int serverLoop()
 {
     Room* room = getThreadRoom();
 
-    if (checkDelta(room) < 0.01)
-        sleep_ms(10);
+    if (checkDelta(room) < 0.005)
+        sleep_ms(1);
     updateDelta(room);
 
     serverBeforeGameStep(room->time, &room->last_asteroid);
     gameStep(room->delta);
     serverAfterGameStep();
 
-    //guiRender();
-    //sleep_ms(20);
     return 0;
 }
 

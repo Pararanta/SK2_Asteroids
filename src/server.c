@@ -66,25 +66,32 @@ int listenForConnections(void * param)
    Entity new_player = { 1, 0.5f, 0.5f };
    while (1) {
       printf("Waiting for new connection...\n");
+
       struct sockaddr_in client_address;
       size_t size = sizeof(client_address);
+
       int connection = accept(socket_server, (struct sockaddr *)&client_address, (socklen_t*)&size);
+
       uint16_t name_len;
       recv(connection, &name_len, sizeof(uint16_t), MSG_WAITALL);
+
       name_len = ntohs(name_len);
       if(name_len > MAX_ROOM_NAME)
          name_len = MAX_ROOM_NAME;
+
       char name_buffer[MAX_ROOM_NAME+1] = {0};
       recv(connection, name_buffer, name_len, MSG_WAITALL);
+
       printf("New Player: %s %s %d\n", inet_ntoa(client_address.sin_addr), name_buffer, name_len);
+
       uint16_t found_room_index = MAX_ROOMS;
       uint16_t empty_room_index = MAX_ROOMS;
+
       for(int i = 0; i < MAX_ROOMS; i++)
       {
          if(!rooms[i].status && empty_room_index == MAX_ROOMS)
             empty_room_index = i;
 
-         printf("%s %s\n", name_buffer, rooms[i].name);
          if(!strcmp(name_buffer, rooms[i].name))
             found_room_index = i;
       }

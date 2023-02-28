@@ -14,7 +14,7 @@ char * room_name = DEFAULT_ROOM;
 struct addrinfo * resolved;
 SOCKET fd;
 Player me;
-Room room;
+Room room = { 0 };
 int initAddr()
 {
    struct addrinfo hints    = {0};
@@ -87,9 +87,10 @@ int main(int argc, char ** argv)
    uint16_t room_name_size = strlen(room_name);
    printf("%d %s\n", room_name_size, room_name);
    room_name_size = htons(room_name_size);
-   send(fd, &room_name_size, sizeof(uint16_t), 0);
+   send(fd, (char *) & room_name_size, sizeof(uint16_t), 0);
    send(fd, room_name, strlen(room_name), 0);
    initRooms();
+   initRoom(&room, room_name, strlen(room_name));
    initRoomThread(&room);
    initPlayer(&room.player, fd, RESPONSE, REQUEST);
    guiRun(1);

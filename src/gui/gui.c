@@ -20,11 +20,11 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 {
     if (key == GLFW_KEY_W || key == GLFW_KEY_UP || key == GLFW_KEY_K)
         up = action == GLFW_PRESS;
-    if (key == GLFW_KEY_S || key == GLFW_KEY_LEFT || key == GLFW_KEY_J)
+    if (key == GLFW_KEY_S || key == GLFW_KEY_DOWN || key == GLFW_KEY_J)
         down = action == GLFW_PRESS;
-    if (key == GLFW_KEY_A || key == GLFW_KEY_RIGHT || key == GLFW_KEY_H)
+    if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT || key == GLFW_KEY_H)
         left = action == GLFW_PRESS;
-    if (key == GLFW_KEY_D || key == GLFW_KEY_DOWN || key == GLFW_KEY_L)
+    if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT || key == GLFW_KEY_L)
         right = action == GLFW_PRESS;
 }
 

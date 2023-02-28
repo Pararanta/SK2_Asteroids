@@ -47,7 +47,7 @@ Point normalize(float x, float y)
         gettimeofday(&measured, 0);
         double elapsed = measured.tv_sec + measured.tv_usec * 1e-6;
 
-        return return elapsed;
+        return elapsed;
     }
 #endif
 

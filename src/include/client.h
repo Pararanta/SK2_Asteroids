@@ -13,11 +13,11 @@
     #endif
 
     #ifndef RETRY_WAITTIME
-        #define RETRY_WAITTIME 500
+        #define RETRY_WAITTIME 2000
     #endif
 
     #ifndef RETRY_ATTEMPTS
-        #define RETRY_ATTEMPTS 10
+        #define RETRY_ATTEMPTS 5
     #endif
 
     #ifndef MAX_STORED_MESSAGES

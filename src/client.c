@@ -68,30 +68,33 @@ int main(int argc, char ** argv)
    if(strlen(room_name) > MAX_ROOM_NAME)
       room_name[MAX_ROOM_NAME] = '\0';
 
-   printf("Attempting to connect to %s:%s\n", host, port);
    socketInit();
-
-   if(tryResolve())
-   {
-      socketQuit();
-      return 1;
-   }
-
-   for(struct addrinfo * it = resolved; it; it=it->ai_next){
-        struct sockaddr_in* addr = (struct sockaddr_in*) it->ai_addr;
-        printf("Resolved: %s\n", inet_ntoa(addr->sin_addr));
-   }
    fd = socket(AF_INET, SOCK_STREAM, 0);
    if(!socketValid(fd))
    {
       printf("Could not open socket, exiting...\n");
       return 1;
    }
+
+   printf("Attempting to connect to %s:%s\n", host, port);
+
    int result = -1;
+
    for(int i = 0; i < RETRY_ATTEMPTS; i++)
    {
-      result = connect(fd, resolved->ai_addr, resolved->ai_addrlen);
+      if(tryResolve())
+      {
+         socketQuit();
+         return 1;
+      }
+
+      for(struct addrinfo * it = resolved; it; it=it->ai_next){
+         struct sockaddr_in* addr = (struct sockaddr_in*) it->ai_addr;
+         printf("Resolved: %s\n", inet_ntoa(addr->sin_addr));
+      }
+
       printf("Connection attempt %d...\n", i);
+      result = connect(fd, resolved->ai_addr, resolved->ai_addrlen);
       if(result >= 0)
          break;
       sleep_ms(RETRY_WAITTIME);

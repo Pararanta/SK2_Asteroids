@@ -4,4 +4,4 @@ target_link_libraries(gui
         ext
 )
 target_include_directories(gui INTERFACE include)
-target_sources(gui INTERFACE glfw.c gui.c)
+target_sources(gui INTERFACE glfw.c gui.c shader.c)

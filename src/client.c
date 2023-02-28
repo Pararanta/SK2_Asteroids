@@ -12,7 +12,7 @@ char * port = DEFAULT_PORT;
 char * room_name = DEFAULT_ROOM;
 
 struct addrinfo * resolved;
-SOCKET fd;
+sock_t fd;
 Player me;
 Room room = { 0 };
 int initAddr()

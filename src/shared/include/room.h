@@ -56,6 +56,11 @@
             uint16_t a;
             uint16_t b;
         } collisions[MAX_COLLISIONS_PER_STEP];
+
+        double time;
+        double delta;
+        double last_asteroid;
+        uint32_t frame;
     } Room;
 
     uint16_t instantiate(Room * room, Entity prefab);

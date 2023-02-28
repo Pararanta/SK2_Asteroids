@@ -76,38 +76,54 @@ int guiRender()
 
 double last = 0.0;
 double lastAsteroid = -60.0f;
+double delta = 0.0f;
+
 uint32_t frame = -1;
 
-double updateDelta()
+double checkDelta(Room* room)
 {
-    frame++;
+    double now = getTime();
+    return now - room->time;
+}
 
-    double now = glfwGetTime();
-    double delta = now - last;
-    last = now;
+double updateDelta(Room * room)
+{
+    room->frame++;
 
-    return delta;
+    double now = getTime();
+    room->delta = now - room->time;
+    room->time = now;
+
+    return room->delta;
 }
 
 int clientLoop()
 {
+    Room* room = getThreadRoom();
+
+    updateDelta(room);
+
     clientBeforeGameStep();
-    gameStep(updateDelta());
-    clientAfterGameStep(!(frame%120), right - left, up - down, shoot, x, y);
+    gameStep(room->delta);
+    clientAfterGameStep(!(room->frame %120), right - left, up - down, shoot, x, y);
     guiRender();
     shoot = 0;
     return 0;
 }
-double artificial_time = 0.0;
 int serverLoop()
 {
-    serverBeforeGameStep(artificial_time, &lastAsteroid);
-    gameStep(0.02);
+    Room* room = getThreadRoom();
+
+    if (checkDelta(room) < 0.01)
+        sleep_ms(10);
+    updateDelta(room);
+
+    serverBeforeGameStep(room->time, &room->last_asteroid);
+    gameStep(room->delta);
     serverAfterGameStep();
 
     //guiRender();
-    artificial_time += 0.02;
-    sleep_ms(20);
+    //sleep_ms(20);
     return 0;
 }
 

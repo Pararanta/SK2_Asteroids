@@ -20,7 +20,7 @@ int socketQuit(void)
 }
 
 
-int socketClose(SOCKET socket)
+int socketClose(sock_t socket)
 {
 
   int status = 0;
@@ -37,7 +37,7 @@ int socketClose(SOCKET socket)
 
 }
 
-int socketValid(SOCKET socket)
+int socketValid(sock_t socket)
 {
   #ifdef _WIN32
     return socket != INVALID_SOCKET;

@@ -20,11 +20,14 @@ void initRooms()
 
 Room * getThreadRoom()
 {
-    return (Room*)tss_get(room_key);
+    Room* room = (Room*)tss_get(room_key);
+    //printf("Getting room on thread %p for global key %ld as %p\n", thrd_current(), room_key, room);
+    return room;
 }
 
 int initRoomThread(void * room_v)
 {
+    //printf("Initializing room on thread %p for global key %ld to %p\n", thrd_current(), room_key, room_v);
     tss_set(room_key, room_v);
 
     return 0;
@@ -158,11 +161,8 @@ float frandom()
 
 int serverBeforeGameStep(double time, double* lastAsteroid)
 {
-        printf("test12\n");
-
     Room* room = getThreadRoom();
     uint16_t _one = 1;
-    printf("test13\n");
 
     if ((*lastAsteroid) + SHOOT_COOLDOWN * 4 < time)
     {
@@ -306,14 +306,10 @@ void entityHit(Room * room, uint16_t bullet, uint16_t asteroid)
 
 int serverAfterGameStep()
 {
-    printf("test12\n");
     Room * room = getThreadRoom();
-    printf("test13\n");
 
     for(int i = 0; i < room->collision_cnt; i++)
         {
-            Matched test = {0};
-
             Matched playerLostT1 = match(room, room->collisions[i].a, room->collisions[i].b, 1, 3);
             Matched playerLostT2 = match(room, room->collisions[i].a, room->collisions[i].b, 1, 4);
             Matched playerLostT3 = match(room, room->collisions[i].a, room->collisions[i].b, 1, 5);
@@ -340,10 +336,8 @@ int serverAfterGameStep()
             if(bulletHitT3.success)
                 entityHit(room, bulletHitT3.a, bulletHitT3.b);
         }
-    printf("test14\n");
 
     applyDestroy(room);
-    printf("test15\n");
 
     for (int i = 0; i < MAX_PLAYER_COUNT; i++)
     {
@@ -358,6 +352,4 @@ int serverAfterGameStep()
 
         startSending(&room->players[i]);
     }
-        printf("test16\n");
-
 }

@@ -10,4 +10,5 @@
 
     int cnd_waitonce(cnd_t * cond, mtx_t * mtx);
     Point normalize(float x, float y);
+    double getTime();
 #endif

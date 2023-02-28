@@ -11,21 +11,21 @@
 #include <string.h>
 
 #include <stdio.h>
-#include <execinfo.h>
+//#include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 void handler(int sig) {
   void *array[10];
   size_t size;
 
   // get void*'s for all entries on the stack
-  size = backtrace(array, 10);
+  //size = backtrace(array, 10);
 
   // print out all the frames to stderr
   fprintf(stderr, "Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  //backtrace_symbols_fd(array, size, STDERR_FILENO);
   exit(1);
 }
 
@@ -41,7 +41,7 @@ Room rooms[MAX_ROOMS];
 int run_room(void * room_v)
 {
    Room * room = room_v;
-   initRoomThread(&room);
+   initRoomThread(room);
    guiRun(0);
 }
 
@@ -84,6 +84,7 @@ int listenForConnections(void * param)
          if(!rooms[i].status && empty_room_index == MAX_ROOMS)
             empty_room_index = i;
 
+         printf("%s %s\n", name_buffer, rooms[i].name);
          if(!strcmp(name_buffer, rooms[i].name))
             found_room_index = i;
       }
@@ -110,7 +111,7 @@ int listenForConnections(void * param)
             continue;
 
          }
-
+         printf("New Player Index: %d\n", player_index);
          initPlayer(&rooms[found_room_index].players[player_index], connection, REQUEST, RESPONSE);
          rooms[found_room_index].players[player_index].entity = instantiate(&rooms[found_room_index], new_player);
          continue;
@@ -119,6 +120,7 @@ int listenForConnections(void * param)
       
       if(empty_room_index != MAX_ROOMS)
       {
+         printf("New Room Index: %d\n", empty_room_index);
          initRoom(&rooms[empty_room_index], name_buffer, name_len);
          initPlayer(&rooms[empty_room_index].players[0], connection, REQUEST, RESPONSE);
          rooms[empty_room_index].players[0].entity = instantiate(&rooms[empty_room_index], new_player);

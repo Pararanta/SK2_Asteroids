@@ -16,7 +16,7 @@
 
     typedef struct {
         uint16_t status; // 0 - uninitialize, 1 - connected
-        SOCKET fd;
+        sock_t fd;
 
         uint16_t request_cnt;
         uint16_t response_cnt;

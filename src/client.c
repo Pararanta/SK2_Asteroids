@@ -60,7 +60,7 @@ int main(int argc, char ** argv)
       host = argv[1];
 
    if(argc > 2)
-      host = argv[2];
+      port = argv[2];
 
    if(argc > 3)
       room_name = argv[3];

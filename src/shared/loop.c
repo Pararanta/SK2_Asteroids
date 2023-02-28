@@ -133,7 +133,6 @@ int clientAfterGameStep(uint8_t requestAll, float dx, float dy, uint8_t shootSta
     
     if(dx != room->entities[room->player.entity].dx || dy != room->entities[room->player.entity].dy)
     {
-        printf("Move request %f %f\n", dx, dy);
         Request move;
         move.type = MOVE;
         move.point.x = dx;

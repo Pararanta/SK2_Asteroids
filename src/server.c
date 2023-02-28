@@ -149,6 +149,7 @@ int listenForConnections(void * param)
 
 int main(int argc, char ** argv)
 {
+   int result;
    signal(SIGSEGV, handler);
    socketInit();
 
@@ -162,16 +163,35 @@ int main(int argc, char ** argv)
    socket_server = socket(AF_INET, SOCK_STREAM, 0);
    if (socket_server < 0)
    {
-      perror("Could not create file descriptor\n");
+      // we are using printf instead of perror since socket errors do not set errno on windows
+      printf("Could not create socket\n");
+      exit(1);
    }
    setsockopt(socket_server, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
    setupAddress();
-   bind(socket_server, (struct sockaddr *) &address_server, sizeof(address_server));
-   listen(socket_server, 4);
-   
+   result = bind(socket_server, (struct sockaddr *) &address_server, sizeof(address_server));
+   if (result < 0)
+   {
+      // we are using printf instead of perror since socket errors do not set errno on windows
+      printf("Could not bind socket\n");
+      exit(1);
+   }
+   result = listen(socket_server, 4);
+   if (result < 0)
+   {
+      // we are using printf instead of perror since socket errors do not set errno on windows
+      printf("Could not listen on socket\n");
+      exit(1);
+   }
    initRooms();
 
-   thrd_create(&accept_thrd, listenForConnections, NULL);
+   result = thrd_create(&accept_thrd, listenForConnections, NULL);
+   if (result != thrd_success)
+   {
+      // we are using printf instead of perror since socket errors do not set errno on windows
+      printf("Could create thread for lsitening to connections\n");
+      exit(1);
+   }
    int res;
    thrd_join(accept_thrd, &res);
    socketQuit();

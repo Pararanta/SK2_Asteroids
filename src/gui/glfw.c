@@ -97,6 +97,7 @@ int glfwFinish(GLFWwindow * window)
 
 int error(int occured, const char * error)
 {
+   if (occured)
       fprintf(stderr, "Application error occured (%d): %s\n", occured, error);
    return occured;
 }

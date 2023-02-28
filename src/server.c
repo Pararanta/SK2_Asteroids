@@ -134,7 +134,10 @@ int listenForConnections(void * param)
          printf("New Room Index: %d\n", empty_room_index);
          initRoom(&rooms[empty_room_index], name_buffer, name_len);
          initPlayer(&rooms[empty_room_index].players[0], connection, REQUEST, RESPONSE);
-         rooms[empty_room_index].players[0].entity = instantiate(&rooms[empty_room_index], new_player);
+         uint16_t instance_index = instantiate(&rooms[empty_room_index], new_player);
+         rooms[empty_room_index].players[0].entity = instance_index;
+         instance_index = htons(instance_index);
+         send(connection, (char*)&instance_index, sizeof(uint16_t), 0);
          thrd_create(&rooms[empty_room_index].room_thrd, run_room, (void *) &rooms[empty_room_index]);
          continue;
       }

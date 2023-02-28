@@ -46,7 +46,7 @@
     * @param player Pointer to player which we want to initialize.
     * @param fd Pointer socket on which connection to player is
     */
-    int initPlayer(Player * player, SOCKET fd, MessageType listen_type, MessageType send_type);
+    int initPlayer(Player * player, sock_t fd, MessageType listen_type, MessageType send_type);
 
     /**
     * @brief A function to atomically append array of requests to player

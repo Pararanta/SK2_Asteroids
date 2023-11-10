@@ -17,7 +17,7 @@
         Entity entity;
     } Response;
 
-    // client->server
+    // client -> server
     typedef enum : uint16_t {
         REQUEST_ENTITY = 0,
         MOVE = 1,

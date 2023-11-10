@@ -19,13 +19,13 @@ uint8_t shoot;
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_W || key == GLFW_KEY_UP || key == GLFW_KEY_K)
-        up = action == GLFW_PRESS;
+        up = action == GLFW_PRESS || action == GLFW_REPEAT;
     if (key == GLFW_KEY_S || key == GLFW_KEY_DOWN || key == GLFW_KEY_J)
-        down = action == GLFW_PRESS;
+        down = action == GLFW_PRESS || action == GLFW_REPEAT;
     if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT || key == GLFW_KEY_H)
-        left = action == GLFW_PRESS;
+        left = action == GLFW_PRESS || action == GLFW_REPEAT;
     if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT || key == GLFW_KEY_L)
-        right = action == GLFW_PRESS;
+        right = action == GLFW_PRESS || action == GLFW_REPEAT;
 }
 
 void mouseCallback(GLFWwindow* window, int button, int action, int mods)
@@ -70,7 +70,10 @@ int guiRender()
     setAttrib(program, "coord", coords, draw_cnt, coord_vbo);
     setAttrib(program, "color", colors, draw_cnt, color_vbo);
     glDrawArrays(GL_POINTS, 0, draw_cnt);
-
+    if(room->player.connection_error)
+    {
+       
+    }
     return 0;
 }
 
@@ -94,15 +97,20 @@ double updateDelta(Room * room)
 int clientLoop()
 {
     Room* room = getThreadRoom();
-
     updateDelta(room);
 
     clientBeforeGameStep();
     gameStep(room->delta);
     clientAfterGameStep(!(room->frame%120), right - left, up - down, shoot, x, y);
-    guiRender();
     shoot = 0;
-    return 0;
+    
+    if(!room->player.connection_error)
+    {
+        guiRender();
+        room->player.finish_time = room->time;
+    }
+
+    return room->player.finish_time + 5.0 < room->time;
 }
 int serverLoop()
 {

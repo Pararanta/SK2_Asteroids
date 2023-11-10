@@ -26,6 +26,7 @@
 
         mtx_t request_mtx;
         mtx_t response_mtx;
+        mtx_t send_mtx;
 
         uint8_t listen; // 0 - do not listen, 1 - continue listening
         uint8_t connection_error; // 0 - no error, 1 - error
@@ -39,6 +40,7 @@
 
         uint16_t entity;
         double last_shot;
+        double finish_time;
     } Player;
 
     /**

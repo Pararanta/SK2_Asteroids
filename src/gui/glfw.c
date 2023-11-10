@@ -76,7 +76,11 @@ int glfwStart(int window_size, char * window_title, GLFWwindow ** out_window)
    (*out_window) = window;
 
    glfwMakeContextCurrent(window);
-   gladLoadGL(glfwGetProcAddress);
+   if (error(!gladLoadGL(glfwGetProcAddress), "GLAD init failed!"))
+	{
+		glfwTerminate();
+		return 1;
+	}
 
    glClearColor(0, 0, 0, 1);
    glfwSwapInterval(1);

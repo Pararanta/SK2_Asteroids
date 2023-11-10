@@ -159,7 +159,7 @@ int main(int argc, char ** argv)
    if(argc > 2)
       port = argv[2];
    
-   printf("Attempting to host on %s:%s", host, port);
+   printf("Attempting to host on %s:%s\n", host, port);
    socket_server = socket(AF_INET, SOCK_STREAM, 0);
    if (socket_server < 0)
    {

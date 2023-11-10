@@ -37,6 +37,7 @@ int initPlayer(Player * player, sock_t fd, MessageType listen_type, MessageType 
 
     mtx_init(&player->request_mtx, mtx_plain);
     mtx_init(&player->response_mtx, mtx_plain);
+    mtx_init(&player->send_mtx, mtx_plain);
     cnd_init(&player->send_cnd);
 
     player->listen = 1;
@@ -83,6 +84,7 @@ int destroyPlayer(Player * player)
     cnd_destroy(&player->send_cnd);
     mtx_destroy(&player->request_mtx);
     mtx_destroy(&player->response_mtx);
+    mtx_destroy(&player->send_mtx);
 
     player->status = 0;
 
@@ -156,7 +158,6 @@ int listenRequests(void * player_v)
         Request request;
 
         result = recv(player->fd, &request, sizeof(Request), MSG_WAITALL);
-
         // end listening if encountered end of input or error
         if(result < 0 || result == 0)
         {
@@ -222,7 +223,7 @@ int sendRequests(void * player_v)
             break;
         }
 
-        cnd_waitonce(&player->send_cnd, &player->request_mtx);
+        cnd_waitonce(&player->send_cnd, &player->send_mtx);
     }
 
     return !player->listen;
@@ -238,6 +239,7 @@ int sendResponses(void * player_v)
     while(player->listen && !player->connection_error)
     {
         consumeResponses(player, responses, &count);
+        cnd_signal(&player->send_cnd);
 
         int result = 1;
         for(int i = 0; i < count; i++)
@@ -254,7 +256,7 @@ int sendResponses(void * player_v)
             break;
         }
 
-        cnd_waitonce(&player->send_cnd, &player->request_mtx);
+        cnd_waitonce(&player->send_cnd, &player->send_mtx);
     }
 
     return !player->listen;
